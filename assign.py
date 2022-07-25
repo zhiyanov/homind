@@ -24,5 +24,3 @@ def hungarian(distance_matrix):
 
     return start, end
     
-
-
