@@ -2,7 +2,7 @@ import numpy as np
 from hyppo.ksample import KSample
 
 from .rank import sample as rnksample
-from .rank import decorator as rnkdecorator
+from .rank import mthddecor as rnkdecorator
 from .utils import FLOAT_TYPE
 
 CALC_ACCURACY = 0.01
@@ -27,8 +27,8 @@ class HRDist(KSample):
     
     @rnkdecorator
     def statistic(self, *samples):
-        return super().statistic(samples)
+        return super().statistic(*samples)
 
     @rnkdecorator
     def test(self, *samples):
-        return super().test(samples)
+        return super().test(*samples)
