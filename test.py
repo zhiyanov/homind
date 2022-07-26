@@ -1,6 +1,6 @@
 import numpy as np
 
-from lib.homogeneity import HRDist
+from lib.homogeneity import HRTest
 from lib.utils import FLOAT_TYPE
 
 
@@ -15,7 +15,10 @@ def homogeneity_test_H1():
             np.array([[1, 0], [0, 1]]),
             size=second_size)
 
-    test = HRDist(indep_test="Dcorr")
-    return test.statistic(first_sample, second_sample)
+    test = HRTest(indep_test="Dcorr")
 
-homogeneity_test_H1()
+    stat = test.statistic(first_sample, second_sample)
+    pvalue = test.cdf(stat, 2, first_size, second_size)
+    return stat, pvalue
+
+print(homogeneity_test_H1())
