@@ -7,14 +7,17 @@ from .utils import FLOAT_TYPE
 
 SHAPE_ERR = -1
 
+def algosample(dim, size):
+    pass
 
-def sample(dim, size):
+def randomsample(dim, size):
     radial = np.random.uniform(size=size).reshape((-1, 1))
     spherical = np.random.multivariate_normal(
             np.zeros(dim, dtype=FLOAT_TYPE),
             np.identity(dim, dtype=FLOAT_TYPE),
             size=size)
-    return spherical * radial
+    distances = np.sqrt((spherical * spherical).sum(axis=1)).reshape((-1, 1))
+    return spherical / distances * radial
 
 def rankdata(data, rank):
     if data.shape != rank.shape:
@@ -30,7 +33,8 @@ def mthddecor(func):
         dim = samples[0].shape[1]
         size = sum(smp.shape[0] for smp in samples)
         
-        ranks = sample(dim, size)
+        # ranks = algosample(dim, size)
+        ranks = randomsample(dim, size)
         ssample = np.vstack(samples)
         ssample = rankdata(ssample, ranks)
         

@@ -2,7 +2,7 @@ import numpy as np
 import tqdm as tq
 from hyppo.ksample import KSample
 
-from .rank import sample as rnksample
+from .rank import randomsample as rnksample
 from .rank import mthddecor as rnkdecorator
 from .utils import FLOAT_TYPE
 
@@ -18,7 +18,7 @@ class HRTest(KSample):
             acc = min(CALC_ACCURACY, kwargs["acc"])
         else:
             acc = CALC_ACCURACY
-        iteration_num = int(2 * (1 / 4) / acc**2)
+        iteration_num = int(4 * (1 / 4) / acc**2)
         
         proba = 0.
         for i in tq.tqdm(range(iteration_num)):
