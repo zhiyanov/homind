@@ -51,11 +51,11 @@ def decorator(is_method, is_algorithmic):
         return ranks
         
     def dec(func):
-        def function_wrapper(*samples):
-            return func(*rank(*samples))
+        def function_wrapper(*samples, **kwargs):
+            return func(*rank(*samples), **kwargs)
         
-        def method_wrapper(self, *samples):
-            return func(self, *rank(*samples))
+        def method_wrapper(self, *samples, **kwargs):
+            return func(self, *rank(*samples), **kwargs)
         
         if is_method:
             return method_wrapper
