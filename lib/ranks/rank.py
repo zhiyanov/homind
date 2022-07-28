@@ -3,9 +3,10 @@ from scipy.spatial import distance_matrix as _dmt
 
 from .assign import hungarian
 from .assign import emd
-from .utils import FLOAT_TYPE
+from ..utils import FLOAT_TYPE
 
 SHAPE_ERR = -1
+
 
 def algosample(dim, size):
     pass
@@ -19,32 +20,45 @@ def randomsample(dim, size):
     distances = np.sqrt((spherical * spherical).sum(axis=1)).reshape((-1, 1))
     return spherical / distances * radial
 
-def rankdata(data, rank):
-    if data.shape != rank.shape:
+def rankdata(data, ranks):
+    if data.shape != ranks.shape:
         return SHAPE_ERR
     
-    distance_matrix = _dmt(data, rank)
+    distance_matrix = _dmt(data, ranks)
     _, assignment = hungarian(distance_matrix)
-    return rank[assignment]
+    return ranks[assignment]
 
-def mthddecor(func):
-    def wrapper(self, *samples): 
-        samples = [np.array(smp, dtype=FLOAT_TYPE) for smp in samples]  
+def decorator(is_method, is_algorithmic):
+    def rank(*samples):
+        samples = [np.array(smp, dtype=FLOAT_TYPE) for smp in samples] 
         dim = samples[0].shape[1]
         size = sum(smp.shape[0] for smp in samples)
         
-        # ranks = algosample(dim, size)
-        ranks = randomsample(dim, size)
+        if is_algorithmic:
+            ranks = algosample(dim, size)
+        else:
+            ranks = randomsample(dim, size)
+
         ssample = np.vstack(samples)
         ssample = rankdata(ssample, ranks)
         
-        ranked = []
+        ranks = []
         start, end = 0, 0
         for smp in samples:
             end += smp.shape[0]
-            ranked.append(ssample[start:end])
-            start += smp.shape[0]
+            ranks.append(ssample[start:end])
+            start += smp.shape[0] 
+        return ranks
+        
+    def dec(func):
+        def function_wrapper(*samples):
+            return func(*rank(*samples))
+        
+        def method_wrapper(self, *samples):
+            return func(self, *rank(*samples))
+        
+        if is_method:
+            return method_wrapper
+        return function_wrapper
 
-        return func(self, *ranked)
-    
-    return wrapper    
+    return dec

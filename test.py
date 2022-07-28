@@ -1,9 +1,9 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-from lib.homogeneity import HRTest
+from lib.stats.homogeneity import RankedKSample
 from lib.utils import FLOAT_TYPE
-import lib.rank as rank
+import lib.ranks.rank as rank
 
 
 def homogeneity_test_normal_H1():
@@ -17,7 +17,7 @@ def homogeneity_test_normal_H1():
             np.array([[1, 0], [0, 1]]),
             size=second_size)
     
-    ranks = rank.sample(2, first_size + second_size)
+    ranks = rank.randomsample(2, first_size + second_size)
     ranked = rank.rankdata(
             np.vstack([first_sample, second_sample]),
             ranks)
@@ -31,7 +31,7 @@ def homogeneity_test_normal_H1():
     plt.savefig("./picture.png")
 
 
-    test = HRTest(indep_test="Dcorr")
+    test = RankedKSample(indep_test="Dcorr")
 
     stat = test.statistic(first_sample, second_sample)
     pvalue = test.cdf(stat, 2, first_size, second_size)
@@ -49,7 +49,7 @@ def homogeneity_test_circle_H1():
             np.array([[1, 0], [0, 1]]),
             size=second_size)
     
-    ranks = rank.sample(2, first_size + second_size)
+    ranks = rank.randomsample(2, first_size + second_size)
     ranked = rank.rankdata(
             np.vstack([first_sample, second_sample]),
             ranks)
@@ -62,8 +62,11 @@ def homogeneity_test_circle_H1():
     plt.axes().set_aspect("equal", adjustable='box')
     plt.savefig("./picture.png")
 
-    test = HRTest(indep_test="Dcorr")
+    test = RankedKSample(indep_test="Dcorr")
 
     stat = test.statistic(first_sample, second_sample)
     pvalue = test.cdf(stat, 2, first_size, second_size)
     return stat, pvalue
+
+print(homogeneity_test_normal_H1())
+# print(homogeneity_test_circle_H1())

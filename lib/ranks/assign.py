@@ -3,7 +3,7 @@ import numpy as np
 from ot.lp import emd as _emd
 from scipy.optimize import linear_sum_assignment as _lsm
 
-from .utils import format_float
+from ..utils import format_float
 
 
 def emd(distance_matrix):
@@ -22,5 +22,4 @@ def hungarian(distance_matrix):
     distance_matrix = format_float(distance_matrix)
     start, end = _lsm(distance_matrix)
 
-    return start, end
-    
+    return start, end 

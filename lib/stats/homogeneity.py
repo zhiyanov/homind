@@ -2,14 +2,14 @@ import numpy as np
 import tqdm as tq
 from hyppo.ksample import KSample
 
-from .rank import randomsample as rnksample
-from .rank import mthddecor as rnkdecorator
-from .utils import FLOAT_TYPE
+from ..ranks.rank import randomsample as rank_sample
+from ..ranks.rank import decorator as rank_decorator
+from ..utils import FLOAT_TYPE
 
 CALC_ACCURACY = 0.01
 
 
-class HRTest(KSample):
+class RankedKSample(KSample):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -22,17 +22,17 @@ class HRTest(KSample):
         
         proba = 0.
         for i in tq.tqdm(range(iteration_num)):
-            rank_smpl = [rnksample(dim, size) for size in sizes]
+            rank_smpl = [rank_sample(dim, size) for size in sizes]
             stat = self.statistic(*rank_smpl)
             if stat <= x:
                 proba += 1.
         proba /= iteration_num
         return proba
     
-    @rnkdecorator
+    @rank_decorator(True, False)
     def statistic(self, *samples):
         return super().statistic(*samples)
 
-    @rnkdecorator
+    @rank_decorator(True, False)
     def test(self, *samples):
         return super().test(*samples)
