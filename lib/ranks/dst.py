@@ -4,9 +4,11 @@ from multiprocessing import Process, Queue
 import numpy as np
 import tqdm
 
-from .rank import randomsample
-from .rank import randomgenerator
-from .rank import rank
+import .rank as rnk
+# from .rank import randomsample
+# from .rank import randomgenerator
+# from .rank import rank
+
 from ..utils import INT_TYPE, FLOAT_TYPE
 
 DIMENSION_ERR = -1
@@ -22,7 +24,7 @@ class Generator(ABC):
         self.seed = seed
         self.rng = np.random.default_rng(seed)
 
-        self.ranks = randomsample(
+        self.ranks = rnk.randomsample(
                 self.dimension,
                 self.sizes.sum(),
                 seed=self.seed)
@@ -30,7 +32,7 @@ class Generator(ABC):
         self.dst = None
 
     def statistic(self, *samples, **kwargs):
-        ranks = rank(samples, self.ranks)
+        ranks = rnk.rank(samples, self.ranks)
         return self.st(*ranks, **kwargs)
 
     def test(self, *samples, **kwargs):
@@ -112,7 +114,7 @@ class Permuter(Generator):
             
 class Limiter(Generator):
     def sample(self, seed=None, **kwargs):
-        generator = randomgenerator(
+        generator = rnk.randomgenerator(
             self.dimension, self.sizes.sum(),
             seed=seed)
 
