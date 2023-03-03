@@ -1,7 +1,7 @@
 import numpy as np
 
-FLOAT_TYPE = np.float32
-INT_TYPE = np.int32
+FLOAT_TYPE = np.float64
+INT_TYPE = np.int64
 
 
 def format_float(data):
