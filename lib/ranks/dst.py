@@ -4,7 +4,7 @@ from multiprocessing import Process, Queue
 import numpy as np
 import tqdm
 
-import .rank as rnk
+import rank as rnk
 # from .rank import randomsample
 # from .rank import randomgenerator
 # from .rank import rank
