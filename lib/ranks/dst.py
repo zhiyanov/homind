@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
-from multiprocessing import Process, Queue
+from multiprocessing import Process, Queue, connection
+from joblib import Parallel, delayed
 
 import numpy as np
 import tqdm
@@ -46,14 +47,11 @@ class Generator(ABC):
     def sample(self, seed=None, **kwargs):
         pass
      
-    def generate(self, size, seed=None, queue=None, **kwargs):
+    def generate(self, size, seed=None, **kwargs):
         sampler = self.sample(seed=seed, **kwargs)
         result = np.zeros(size, dtype=FLOAT_TYPE)
         for i in tqdm.tqdm(range(size)):
             result[i] = next(sampler)
-
-        if not (queue is None):
-            queue.put(result)
 
         return result
 
@@ -61,27 +59,19 @@ class Generator(ABC):
         if not seeds:
             seeds = [self.seed]
         
-        procs = []
-        queue = Queue()
         psize = size // len(seeds)
         for i, seed in enumerate(seeds):
             if i == len(seeds) - 1:
                 psize += size % len(seeds)
-            
-            proc = Process(
-                target=self.generate,
-                args=(psize, seed, queue),
-                kwargs=kwargs
-            )
-            proc.start()
-            procs.append(proc)
 
-        for i in range(len(procs)):
-            procs[i].join()
-        
-        result = []
-        while not queue.empty():
-            result.append(queue.get())
+        result = Parallel(n_jobs=len(seeds))(
+            delayed(self.generate)(
+                size // len(seeds) if i == len(seeds) - 1 else \
+                size // len(seeds) + size % len(seeds),
+                seeds[i],
+                **kwargs
+            ) for i in range(len(seeds))
+        )
         
         result = np.hstack(result)
         result.sort()
